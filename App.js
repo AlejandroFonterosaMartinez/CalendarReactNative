@@ -1,10 +1,9 @@
 
+
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { Button, Input, ListItem } from 'react-native-elements';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-
 
 const CalendarApp = () => {
   const [selectedDate, setSelectedDate] = useState('');
@@ -12,27 +11,6 @@ const CalendarApp = () => {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState({});
   const [markedDates, setMarkedDates] = useState({});
-  const [selectedTime, setSelectedTime] = useState(new Date());
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedTaskTime, setSelectedTaskTime] = useState(new Date()); // Estado para almacenar la hora seleccionada para la tarea
-  const [selectedManualTime, setSelectedManualTime] = useState(new Date());
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    setSelectedManualTime(date); // Actualiza la hora seleccionada manualmente
-    hideDatePicker();
-  };
-
-  const handleTimeChange = (newTime) => {
-    setSelectedTime(newTime);
-  };
 
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -43,9 +21,7 @@ const CalendarApp = () => {
     if (task.trim() !== '') {
       setTasks({
         ...tasks,
-        [selectedDate]: tasks[selectedDate]
-          ? [...tasks[selectedDate], { task, time: selectedManualTime }]
-          : [{ task, time: selectedManualTime }],
+        [selectedDate]: tasks[selectedDate] ? [...tasks[selectedDate], task] : [task],
       });
 
       const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
@@ -62,6 +38,14 @@ const CalendarApp = () => {
 
   return (
     <View style={{ flex: 1, marginTop: 50, paddingHorizontal: 20, backgroundColor: 'white' }}>
+      <h1 style={{
+        marginTop: 10,
+        color: 'lightblue',
+        fontSize: 50,
+        fontFamily: 'arial',
+        textAlign: 'center',
+        marginBottom: 20,
+      }}>Calendario</h1>
       <Calendar
         onDayPress={handleDayPress}
         markedDates={markedDates}
@@ -82,35 +66,28 @@ const CalendarApp = () => {
 
         }}
       />
+
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 50 }}>
-          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: 300 }}>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>{selectedDate}</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',  }}>
+          <View style={{ padding: 20, borderRadius: 10, width: 300 ,backgroundColor:"lightblue"}}>
+            <Text style={{ fontSize: 18, marginBottom: 10, textAlign:'center',marginTop:10,backgroundColor:"white",borderRadius:10 }}>{selectedDate}</Text>
             <Input
-              placeholder="Ingrese una tarea"
+            style={{backgroundColor:"white",textAlign:'center'}}
+              placeholder="Que vas a hacer hoy?"
               onChangeText={(text) => setTask(text)}
               value={task}
-              containerStyle={{ marginBottom: 10 }}
+              containerStyle={{ marginBottom: 20 }}
             />
-            <TouchableOpacity onPress={showDatePicker}>
-              <Text>{selectedTaskTime.toLocaleTimeString()}</Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="time"
-              date={selectedManualTime} // Ahora utiliza la hora seleccionada manualmente
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-            <Button title="Agregar tarea" onPress={handleAddTask} />
+            <Button title="Agregar" onPress={handleAddTask} />
           </View>
         </View>
       </Modal>
+
       <View style={{ marginTop: 20 }}>
         <Text style={{ fontSize: 20, marginBottom: 10 }}>Tareas:</Text>
         {tasks[selectedDate] &&
